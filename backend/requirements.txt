@@ -5,11 +5,9 @@ pydantic
 langchain
 langchain-community
 langchain-text-splitters
-langchain_huggingface
 langchain-chroma
 chromadb
-sentence-transformers
-torch
+fastembed
 groq
 pymupdf
 pypdf
