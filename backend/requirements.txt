@@ -7,4 +7,5 @@ langchain-community
 chromadb
 groq
 pypdf
+pymupdf
 python-multipart
