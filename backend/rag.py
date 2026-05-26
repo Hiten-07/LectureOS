@@ -1,4 +1,4 @@
-from langchain_huggingface import HuggingFaceEmbeddings
+﻿from langchain_community.embeddings.fastembed import FastEmbedEmbeddings
 from langchain_chroma import Chroma
 from groq import Groq
 from dotenv import load_dotenv
@@ -18,16 +18,14 @@ def ask_groq(prompt: str) -> str:
     return response.choices[0].message.content
 
 def get_rag_answer(question: str, lecture_id: str) -> dict:
-    embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+    embeddings = FastEmbedEmbeddings()
     vectorstore = Chroma(
         collection_name=f"lecture_{lecture_id}",
         embedding_function=embeddings,
         persist_directory="./chroma_db"
     )
-
     docs = vectorstore.similarity_search(question, k=4)
     context = "\n\n".join([d.page_content for d in docs])
-
     prompt = f"""Answer based ONLY on the content below.
 If the answer is not in the content, say: "This topic wasn't covered."
 
@@ -37,7 +35,6 @@ Content:
 Question: {question}
 
 Answer:"""
-
     answer = ask_groq(prompt)
     return {
         "answer": answer,
