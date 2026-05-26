@@ -7,7 +7,6 @@ langchain-community
 langchain-text-splitters
 langchain-chroma
 chromadb
-fastembed
 groq
 pymupdf
 pypdf

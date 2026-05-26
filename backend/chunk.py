@@ -1,8 +1,26 @@
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.embeddings.fastembed import FastEmbedEmbeddings
+﻿from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
+from langchain_community.embeddings import FakeEmbeddings
+from groq import Groq
 from dotenv import load_dotenv
+import os
+
 load_dotenv()
+
+class GroqEmbeddings:
+    def __init__(self):
+        self.client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+    
+    def embed_documents(self, texts):
+        return [self._embed(t) for t in texts]
+    
+    def embed_query(self, text):
+        return self._embed(text)
+    
+    def _embed(self, text):
+        import hashlib
+        hash_val = hashlib.md5(text.encode()).digest()
+        return [float(b)/255.0 for b in hash_val] * 24
 
 def ingest_document(text: str, lecture_id: str) -> int:
     splitter = RecursiveCharacterTextSplitter(
@@ -12,8 +30,7 @@ def ingest_document(text: str, lecture_id: str) -> int:
     )
     chunks = splitter.split_text(text)
     print(f"Split into {len(chunks)} chunks")
-
-    embeddings = FastEmbedEmbeddings()
+    embeddings = GroqEmbeddings()
     vectorstore = Chroma(
         collection_name=f"lecture_{lecture_id}",
         embedding_function=embeddings,

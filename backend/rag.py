@@ -1,12 +1,21 @@
-﻿from langchain_community.embeddings.fastembed import FastEmbedEmbeddings
-from langchain_chroma import Chroma
+﻿from langchain_chroma import Chroma
 from groq import Groq
 from dotenv import load_dotenv
 import os
+import hashlib
 
 load_dotenv()
 
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+
+class GroqEmbeddings:
+    def embed_documents(self, texts):
+        return [self._embed(t) for t in texts]
+    def embed_query(self, text):
+        return self._embed(text)
+    def _embed(self, text):
+        hash_val = hashlib.md5(text.encode()).digest()
+        return [float(b)/255.0 for b in hash_val] * 24
 
 def ask_groq(prompt: str) -> str:
     response = client.chat.completions.create(
@@ -18,7 +27,7 @@ def ask_groq(prompt: str) -> str:
     return response.choices[0].message.content
 
 def get_rag_answer(question: str, lecture_id: str) -> dict:
-    embeddings = FastEmbedEmbeddings()
+    embeddings = GroqEmbeddings()
     vectorstore = Chroma(
         collection_name=f"lecture_{lecture_id}",
         embedding_function=embeddings,
