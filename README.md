@@ -1,5 +1,8 @@
-# LectureOS
 # 🎓 LectureOS
+
+## 🌐 Live Demo
+- **App:** https://lecture-os.vercel.app
+- **API:** https://lectureos-backend.onrender.com
 
 > An AI-powered lecture assistant that lets you chat with your study material using Retrieval-Augmented Generation (RAG).
 
